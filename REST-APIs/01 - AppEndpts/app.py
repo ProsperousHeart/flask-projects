@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
+# This script is the beginning of a store ...
+
 # later will do object oriented programming (OOP)
 # or using databases ... this is just to get feet wet
 stores = [
@@ -21,23 +23,32 @@ stores = [
 # this automatically looks in templates folder
 @app.route('/')
 def home():
-	return render_template('index.html')
+    """
+    This function occurs when someone gets to the home page.
+    Returns HTML for default home page.
+
+    """
+    return render_template('index.html')
 
 # This is acting like a web server
 # REST API will use the following (opposite from browser)
-#	POST - used to receive data
-#	GET - used to send data back only
-
-# This script is the beginning of a store ...
+#   POST - used to receive data
+#   GET - used to send data back only
 
 # POST /store data: {name:}
 # @app.route('/store') - by default this is a GET request
 @app.route('/store', methods=['POST'])
 def create_store():
+    """
+    This function is called when a POST call is made to the site.
+    If the input header and everything matches up, it will return
+    JSON data (a string that looks like a dict) of a new store.
+
+    """
     request_data = request.get_json()  # request made to endpoint
     new_store = {
         'name': request_data['name'],
-    'items': []
+        'items': []
     }
     stores.append(new_store)
     return jsonify(new_store)
@@ -45,7 +56,7 @@ def create_store():
 # GET /store/<string:name>
 @app.route('/store/<string:name>', methods=['GET']) # 'http://127.0.0.1:5000/some_name'
 def get_store_name(name):
-	# iterate over stores - return if matching else return error message
+    # iterate over stores - return if matching else return error message
     req_store = [store for store in stores if store['name'] == name]
     if len(req_store) > 0:
         return jsonify(req_store[0])
@@ -55,7 +66,7 @@ def get_store_name(name):
 # GET /store
 @app.route('/store', methods=['GET'])
 def get_stores():
-	return jsonify({'stores': stores})
+    return jsonify({'stores': stores})
 
 # POST /store/<string:name>/item {name:, price:}
 @app.route('/store/<string:name>/item', methods=['POST'])
@@ -74,11 +85,10 @@ def create_store_item(name):
 # GET /store/<string:name>/item
 @app.route('/store/<string:name>/item', methods=['GET'])
 def get_store_items(name):
-	# iterate over items in store - return if matching else return error message
-
+    # iterate over items in store - return if matching else return error message
     for store in stores:
         if store['name'] == name:
-            return jsonify[store['items']]
+            return jsonify({'items': store['items']})
     return jsonify({'message': 'store not found'})
 
 app.run(port=5000)
