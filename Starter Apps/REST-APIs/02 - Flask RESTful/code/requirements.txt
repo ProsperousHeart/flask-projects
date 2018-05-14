@@ -40,6 +40,7 @@ fastcache==1.0.2
 filelock==2.0.13
 Flask==0.12.2
 Flask-Cors==3.0.3
+Flask-JWT==0.3.2
 Flask-RESTful==0.3.6
 gevent==1.2.2
 glob2==0.6
@@ -115,6 +116,7 @@ pycrypto==2.6.1
 pycurl==7.43.0.1
 pyflakes==1.6.0
 Pygments==2.2.0
+PyJWT==1.4.2
 pylint==1.8.2
 pyodbc==4.0.22
 pyOpenSSL==17.5.0
