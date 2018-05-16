@@ -6,6 +6,21 @@ from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 
+from user import UserRegister
+
+# # temp
+# import sqlite3
+#
+# connection = sqlite3.connect("data.db")
+# cursor = connection.cursor()
+# query = "SELECT * FROM users WHERE username=?"
+# result = cursor.execute(query, ("jose",))
+# row = result.fetchone()	# returns None if not found
+# if row:
+#     print(row)
+# else:
+#     print(None)
+
 # Flask will be our apps, and app will be root of route
 app = Flask(__name__)
 
@@ -35,13 +50,13 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         required=True,
         help="This field cannot be left blank and must be a float!"
     )
-    
+
     @jwt_required()
     def get(self, name):
         """
         This function returns the information of a requested item.
         If not found, returns a dictionary with None and code 404
-        
+
         """
 
         # =================================================================
@@ -98,10 +113,10 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
 
     @jwt_required()
     def put(self, name):
-        
+
         global items
         item = next(filter(lambda x: x['name'] == name, items), None)
-        
+
         # data = request.get_json()
         data = Item.parser.parse_args()
 
@@ -125,6 +140,7 @@ api.add_resource(Item, '/item/<string:name>')
 # EXAMPLE:  http://127.0.0.1:5000/item/<string:name>
 # replaces need for @app.route('/item/<string:name>') as part of Item class
 api.add_resource(ItemList, '/items')
+api.add_resource(UserRegister, '/register') # calls the POST method
 
 app.run(port=5000, debug=True)  # Flask allows a good way to see error messages
 # debug=True allows you to receive an HTML page
