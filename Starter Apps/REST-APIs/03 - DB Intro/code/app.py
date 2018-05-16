@@ -34,5 +34,7 @@ api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register') # calls the POST method
 
-app.run(port=5000, debug=True)  # Flask allows a good way to see error messages
-# debug=True allows you to receive an HTML page
+# To ensure if this file is imported, we don't call it
+if __name__ == '__main__':  # else imported from elsewhere
+    app.run(port=5000, debug=True)  # Flask allows a good way to see error messages
+    # debug=True allows you to receive an HTML page
