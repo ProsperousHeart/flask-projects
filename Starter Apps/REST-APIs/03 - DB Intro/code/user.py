@@ -76,19 +76,27 @@ class UserRegister(Resource):
 	)
 
 	def post(self):
-		# create connection & cursor
-		connection = sqlite3.connect('data.db')
-		cursor = connection.cursor()
 
 		# parse JSON data coming in from RequestParser
 		data = UserRegister.parser.parse_args()
+
+		# check if user is already in DB
+		# must be done before another connection due to User class
+		if User.find_by_username(data['username']) is not None:
+			return {"message": "User {} already exists.".format(data['username'])}, 409
+
+		# create connection & cursor
+		connection = sqlite3.connect('data.db')
+		cursor = connection.cursor()
 
 		# create & execute insertion query of new user
 		query = "INSERT INTO users VALUES (NULL, ?, ?)"
 		cursor.execute(query, (data['username'], data['password']))
 
-		# commit changes & close connection
+		# commit changes
 		connection.commit()
+
+		# close connection
 		connection.close()
 
 		# return 201 (successful add/create)
