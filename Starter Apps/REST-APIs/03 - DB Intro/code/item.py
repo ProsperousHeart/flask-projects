@@ -91,25 +91,30 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         # items.append(item)
         # Since writing to a DB now ...
 
-        connection = sqlite3.connect("data.db")
-        cursor = connection.cursor()
-        query = "INSERT INTO items VALUES (?, ?)"
-        cursor.execute(query, (item['name'], item['price']))
-
-        connection.commit()
-        connection.close()
+        # connection = sqlite3.connect("data.db")
+        # cursor = connection.cursor()
+        # query = "INSERT INTO items VALUES (?, ?)"
+        # cursor.execute(query, (item['name'], item['price']))
+        #
+        # connection.commit()
+        # connection.close()
+        try:
+            self.insert(item)   # able to do this after creating classmethod insert
+        except:
+            # should never be this - WAY too general!!!!!
+            return {'message': "An error occurred calling insert()"}, 500
 
         # return items, 201    # tells app like POSTMAN that successful, 201 - CREATED
         return item, 201    # tells app like POSTMAN that successful, 201 - CREATED
         # 202 - ACCEPTED (when delaying the creation ... such as if it takes a long time)
 
-    @jwt_required()
-    def delete(self, name):
-        # global items
-        # items = list(filter(lambda x: x['name'] != name, items))
-        # if len(items) > 0:
-        #     return {'message':  "Item '{}' deleted.".format(name)}, 200
-        # return {'message': "Unable to locate '{}'".format(name)}, 404
+    @classmethod
+    def insert(cls, item):
+        """
+        Takes the connection & insertion using sqlite from post into this
+        function. Takes in an item, if there updates item. Otherwise, inserts.
+
+        """
 
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
@@ -118,6 +123,14 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
 
         connection.commit()
         connection.close()
+
+    @jwt_required()
+    def delete(self, name):
+        # global items
+        # items = list(filter(lambda x: x['name'] != name, items))
+        # if len(items) > 0:
+        #     return {'message':  "Item '{}' deleted.".format(name)}, 200
+        # return {'message': "Unable to locate '{}'".format(name)}, 404
 
         return {'message': "Confirmed item '{}' deleted.".format(name)}
 
