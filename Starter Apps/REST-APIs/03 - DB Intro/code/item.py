@@ -102,7 +102,7 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
             self.insert(item)   # able to do this after creating classmethod insert
         except:
             # should never be this - WAY too general!!!!!
-            return {'message': "An error occurred calling insert()"}, 500
+            return {'message': "An error occurred calling insert()"}, 500   # internal server error
 
         # return items, 201    # tells app like POSTMAN that successful, 201 - CREATED
         return item, 201    # tells app like POSTMAN that successful, 201 - CREATED
@@ -118,8 +118,9 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
 
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
-        query = "DELETE FROM items WHERE name=?"
-        cursor.execute(query, (name,))
+
+        query = "INSERT INTO items VALUES(?, ?)"
+        cursor.execute(query, (item['name'], item['price']))
 
         connection.commit()
         connection.close()
@@ -132,23 +133,62 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         #     return {'message':  "Item '{}' deleted.".format(name)}, 200
         # return {'message': "Unable to locate '{}'".format(name)}, 404
 
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "DELETE FROM items WHERE name=?"
+        cursor.execute(query, (name,))
+
+        connection.commit()
+        connection.close()
+
         return {'message': "Confirmed item '{}' deleted.".format(name)}
 
     @jwt_required()
     def put(self, name):
 
-        global items
-        item = next(filter(lambda x: x['name'] == name, items), None)
+        # global items
+        # item = next(filter(lambda x: x['name'] == name, items), None)
 
         # data = request.get_json()
         data = Item.parser.parse_args()
 
+        item = self.find_by_name(name)
+        updated_item = {'name': name, 'price': data['price']}
+
         if item is None:
-            item = {'name': name, 'price': data['price']}
-            items.append(item)
+            # item = {'name': name, 'price': data['price']}
+            # items.append(item)
+            try:
+                self.insert(updated_item)
+            except:
+                # too general
+                return {'message': 'An error occurred inserting the item.'}, 500
         else:
-            item.update(data)
-        return item
+            # item.update(data)
+            try:
+                self.update(updated_item)
+            except:
+                # too general
+                return {'message': 'An error occurred inserting the item.'}, 500
+        # return item
+        return updated_item
+
+    @classmethod
+    def update(cls, item):
+        """
+        Takes in a JSON item to insert or update to items table.
+
+        """
+
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "UPDATE items SET price=? WHERE name=?"
+        cursor.execute(query, (name,))
+
+        connection.commit()
+        connection.close()
 
 class ItemList(Resource):
     def get(self):
@@ -157,4 +197,15 @@ class ItemList(Resource):
 
         """
 
-        return {'items': items}, 200
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM items"
+        rows = cursor.execute(query)
+        to_rtn = {'items': list(rows)}
+
+        connection.commit()
+        connection.close()
+
+        # return {'items': list(rows)}, 200
+        return to_rtn, 200
