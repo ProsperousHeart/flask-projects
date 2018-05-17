@@ -202,10 +202,13 @@ class ItemList(Resource):
 
         query = "SELECT * FROM items"
         rows = cursor.execute(query)
-        to_rtn = {'items': list(rows)}
+        # to_rtn = {'items': list(rows)}
+        items = []
+        for row in rows:
+            items.append({'name': row[0], 'price': row[1]})
 
-        connection.commit()
         connection.close()
 
         # return {'items': list(rows)}, 200
-        return to_rtn, 200
+        # return to_rtn, 200
+        return {'items': items}
