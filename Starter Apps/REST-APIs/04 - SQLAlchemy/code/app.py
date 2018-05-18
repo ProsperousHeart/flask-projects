@@ -18,6 +18,9 @@ app = Flask(__name__)
 # S6L84 - specify a configuration property
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # turns of flask_SQLAlchemy tracker (not SQLAlchemy)
 
+# S6L85 - tell SQLAlchemy where to find db.py file
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///data.db"
+
 # create key for authentication - this should NEVER be stored publicly!
 # this is only for demonstration purposes ... use a DB or something
 app.secret_key = 'jose'

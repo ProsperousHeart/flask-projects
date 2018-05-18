@@ -90,7 +90,7 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         data = Item.parser.parse_args()
 
         # item = {'name': name, 'price': data['price']}
-        item = ItemModel(name, data['price'])
+        item = ItemModel(name=name, price=data['price'])
 
         # items.append(item)
         # Since writing to a DB now ...
@@ -104,7 +104,9 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         # connection.close()
         try:
             # self.insert(item)   # able to do this after creating classmethod insert
-            ItemModel.insert(item)
+            # ItemModel.insert(item)
+            # ItemModel.save_to_db()
+            item.save_to_db()
         except:
             # should never be this - WAY too general!!!!!
             return {'message': "An error occurred calling insert()"}, 500   # internal server error
@@ -132,22 +134,30 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
 
     @jwt_required()
     def delete(self, name):
-        # global items
-        # items = list(filter(lambda x: x['name'] != name, items))
-        # if len(items) > 0:
-        #     return {'message':  "Item '{}' deleted.".format(name)}, 200
-        # return {'message': "Unable to locate '{}'".format(name)}, 404
+        # # global items
+        # # items = list(filter(lambda x: x['name'] != name, items))
+        # # if len(items) > 0:
+        # #     return {'message':  "Item '{}' deleted.".format(name)}, 200
+        # # return {'message': "Unable to locate '{}'".format(name)}, 404
+        #
+        # connection = sqlite3.connect('data.db')
+        # cursor = connection.cursor()
+        #
+        # query = "DELETE FROM items WHERE name=?"
+        # cursor.execute(query, (name,))
+        #
+        # connection.commit()
+        # connection.close()
+        #
+        # return {'message': "Confirmed item '{}' deleted.".format(name)}
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        item = ItemModel.find_by_name(name)
+        if item:
+            # ItemModel.del_from_db()
+            item.del_from_db()
+            return {'message': "Item '{}' has been deleted.".format(name)}, 200
 
-        query = "DELETE FROM items WHERE name=?"
-        cursor.execute(query, (name,))
-
-        connection.commit()
-        connection.close()
-
-        return {'message': "Confirmed item '{}' deleted.".format(name)}
+        return {'message': "Item '{}' was not found.".format(name)}, 404
 
     @jwt_required()
     def put(self, name):
@@ -164,38 +174,49 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         # item = self.find_by_name(name)
         item = ItemModel.find_by_name(name)
 
-        # ===================
-        # Create ItemModel for updated item info
-        # ===================
-        # updated_item = {'name': name, 'price': data['price']}
-        updated_item = ItemModel(name, data['price'])
+        # removed with SQLAlchemy integration - S6L85
+        # # ===================
+        # # Create ItemModel for updated item info
+        # # ===================
+        # # updated_item = {'name': name, 'price': data['price']}
+        # updated_item = ItemModel(name, data['price'])
 
         if item is None:    # not found in DB
-            # item = {'name': name, 'price': data['price']}
-            # items.append(item)
-            try:
-                """
-                Try inserting the ItemModel (json) into the DB
+            # # item = {'name': name, 'price': data['price']}
+            # # items.append(item)
+            # try:
+            #     """
+            #     Try inserting the ItemModel (json) into the DB
+            #
+            #     """
+            #     # self.insert(updated_item)
+            #     # ItemModel.insert(updated_item)
+            #     updated_item.insert()
+            # except:
+            #     # too general
+            #     return {'message': 'An error occurred inserting the item.'}, 500
 
-                """
-                # self.insert(updated_item)
-                # ItemModel.insert(updated_item)
-                updated_item.insert()
-            except:
-                # too general
-                return {'message': 'An error occurred inserting the item.'}, 500
+            item = ItemModel(name, data['price'])
+
         else:
-            # item.update(data)
-            try:
-                # self.update(updated_item)
-                # ItemModel.update(updated_item)
-                updated_item.update()
-            except:
-                # too general
-                return {'message': 'An error occurred inserting the item.'}, 500
+            # # item.update(data)
+            # try:
+            #     # self.update(updated_item)
+            #     # ItemModel.update(updated_item)
+            #     updated_item.update()
+            # except:
+            #     # too general
+            #     return {'message': 'An error occurred inserting the item.'}, 500
+            item.price = data['price']
+
+        item.save_to_db()
+
         # return item
         # return updated_item
-        return updated_item.json()
+        # return updated_item.json()
+        item.json()
+        return item.json()
+        # return {'message': "Item '{}' was added/updated with price: {}".format(name, price)}
 
     # @classmethod
     # def update(cls, item):
@@ -226,7 +247,8 @@ class ItemList(Resource):
         # to_rtn = {'items': list(rows)}
         items = []
         for row in rows:
-            items.append({'name': row[0], 'price': row[1]})
+            # items.append({'name': row[0], 'price': row[1]})
+            items.append({'name': row[1], 'price': row[2]})
 
         connection.close()
 

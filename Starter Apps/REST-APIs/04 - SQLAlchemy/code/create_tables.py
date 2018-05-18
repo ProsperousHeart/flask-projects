@@ -9,7 +9,8 @@ create_tbl_query = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, us
 cursor.execute(create_tbl_query)
 
 # create new table for items
-create_tbl_query = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
+# create_tbl_query = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
+create_tbl_query = "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name text, price real)"
 cursor.execute(create_tbl_query)
 
 # cursor.execute("INSERT INTO items VALUES ('test', 10.99)")
