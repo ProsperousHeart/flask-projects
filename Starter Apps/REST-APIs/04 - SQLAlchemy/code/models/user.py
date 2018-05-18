@@ -1,6 +1,8 @@
 import sqlite3
+from db import db
 
-class UserModel:
+# class UserModel:
+class UserModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
     """
     This is not a resource because the API cannot receive data into this class
     or send as a JSON representation. It is a helper used to store data about
@@ -8,7 +10,18 @@ class UserModel:
 
     """
 
+    # tell ALchemy which table items will be stored in
+    __tablename__ = "users"
+
+    # tell ALchemy which columns it will contain
+    # creates an index & makes it easier to search
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80)) # can limit size of username
+    password = db.Column(db.String(80))
+
     def __init__(self, _id, username, password):
+        # these items must match the columns above
+        # if they're not created above, they won't be stored to the DB
         self.id = _id
         self.username = username
         self.password = password
