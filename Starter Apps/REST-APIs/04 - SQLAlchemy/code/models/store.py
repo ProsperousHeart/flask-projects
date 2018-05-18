@@ -37,7 +37,7 @@ class StoreModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
         # return {'name': self.name, 'items': [item.json for item in self.items]}
         # with lazy='dynamic' self.items is a query builder in items table
         # so until calling JSON method we're not looking into the table
-        return {'name': self.name, 'items': [item.json for item in self.items.all()]}
+        return {'name': self.name, 'items': [item.json() for item in self.items.all()]}
 
     @classmethod
     def find_by_name(cls, name):
