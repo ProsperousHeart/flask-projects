@@ -92,7 +92,9 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
     def delete(self, name):
         global items
         items = list(filter(lambda x: x['name'] != name, items))
-        return {'message':  "Item '{}' deleted.".format(name)}
+        if len(items) > 0:
+            return {'message':  "Item '{}' deleted.".format(name)}, 200
+        return {'message': "Unable to locate '{}'".format(name)}, 404
 
     @jwt_required()
     def put(self, name):
