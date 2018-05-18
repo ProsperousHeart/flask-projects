@@ -7,8 +7,10 @@ from flask_restful import Api
 from flask_jwt import JWT
 from security import authenticate, identity
 
-from user import UserRegister
-from item import Item, ItemList
+# from user import UserRegister
+from resources.user import UserRegister
+# from item import Item, ItemList
+from resources.item import Item, ItemList
 
 # Flask will be our apps, and app will be root of route
 app = Flask(__name__)
