@@ -63,11 +63,11 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
     # def insert(cls, item):
     # def insert(self):
     def save_to_db(self):   # changed from insert once SQLAlchemy got involved
-        """
-        Takes the connection & insertion using sqlite from post into this
-        function. Takes in an item, if there updates item. Otherwise, inserts.
-        """
-
+        # """
+        # Takes the connection & insertion using sqlite from post into this
+        # function. Takes in an item, if there updates item. Otherwise, inserts.
+        # """
+        #
         # connection = sqlite3.connect("data.db")
         # cursor = connection.cursor()
         #
@@ -77,6 +77,10 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
         #
         # connection.commit()
         # connection.close()
+        """
+        This function takes in an ItemModel object and saves it to the DB.
+
+        """
 
         # this is helpful for both update and insert
         db.session.add(self) # session = coll of objs to add to DB
@@ -99,5 +103,10 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
     #     connection.close()
 
     def del_from_db(self):
+        """
+        This function deletes an ItemModel object from the DB.
+
+        """
+
         db.session.delete(self)
         db.session.commit()
