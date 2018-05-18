@@ -13,7 +13,11 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
     name = db.Column(db.String(80)) # can limit size of username
     price = db.Column(db.Float(precision=2)) # limit number of decimal pts
 
-    def __init__(self, name, price):
+    # have a way to tie to a particular store
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    store = db.relationship('StoreModel') # removes need to do JOIN
+
+    def __init__(self, name, price, store_id):
         """
         Since internal representation, must also contain properties of an item
         as object properties.
@@ -24,6 +28,7 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
 
         self.name = name
         self.price = price
+        self.store_id = store_id
 
     def json(self):
         """
