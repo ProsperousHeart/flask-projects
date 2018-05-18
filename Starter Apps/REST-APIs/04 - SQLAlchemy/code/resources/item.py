@@ -14,6 +14,11 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         required=True,
         help="This field cannot be left blank and must be a float!"
     )
+    parser.add_argument('store_id',
+        type=int,
+        required=True,
+        help="This field cannot be left blank and must be an integer!"
+    )
 
     @jwt_required()
     def get(self, name):
@@ -96,7 +101,7 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         data = Item.parser.parse_args()
 
         # item = {'name': name, 'price': data['price']}
-        item = ItemModel(name=name, price=data['price'])
+        item = ItemModel(name=name, price=data['price'], store_id=data['store_id'])
 
         # items.append(item)
         # Since writing to a DB now ...
@@ -188,21 +193,22 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         # updated_item = ItemModel(name, data['price'])
 
         if item is None:    # not found in DB
-            # # item = {'name': name, 'price': data['price']}
-            # # items.append(item)
-            # try:
-            #     """
-            #     Try inserting the ItemModel (json) into the DB
+            # # # item = {'name': name, 'price': data['price']}
+            # # # items.append(item)
+            # # try:
+            # #     """
+            # #     Try inserting the ItemModel (json) into the DB
+            # #
+            # #     """
+            # #     # self.insert(updated_item)
+            # #     # ItemModel.insert(updated_item)
+            # #     updated_item.insert()
+            # # except:
+            # #     # too general
+            # #     return {'message': 'An error occurred inserting the item.'}, 500
             #
-            #     """
-            #     # self.insert(updated_item)
-            #     # ItemModel.insert(updated_item)
-            #     updated_item.insert()
-            # except:
-            #     # too general
-            #     return {'message': 'An error occurred inserting the item.'}, 500
-
-            item = ItemModel(name, data['price'])
+            # item = ItemModel(name, data['price'], data['store_id'])
+            item = ItemModel(name, **data)
 
         else:
             # # item.update(data)
@@ -213,7 +219,10 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
             # except:
             #     # too general
             #     return {'message': 'An error occurred inserting the item.'}, 500
-            item.price = data['price']
+            if data['price']:
+                item.price = data['price']
+            if data['store_id']:
+                item.store_id = data['store_id']
 
         item.save_to_db()
 
