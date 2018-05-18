@@ -28,6 +28,11 @@ app.secret_key = 'jose'
 # allows us to easily add resources to the API
 api = Api(app)
 
+# create the DB using a Flask decorator & SQLAlchemy
+@app.before_first_request
+def create_tables():
+    db.create_all() # creates SQLALCHEMY_DATABASE_URI & make tables if != exist
+
 # Use JWT for authentication using app
 #   1 - creates new endpoint:   \auth
 #   2 - uses functions from security.py to take in username/password
