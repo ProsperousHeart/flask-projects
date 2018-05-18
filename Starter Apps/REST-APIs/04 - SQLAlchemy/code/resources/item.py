@@ -1,4 +1,4 @@
-import sqlite3
+# import sqlite3
 from flask import request
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
@@ -22,25 +22,31 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         If not found, returns a dictionary with None and code 404
         """
 
-        # # setup connection to database
-        # connection = sqlite3.connect("data.db")
-        # cursor = connection.cursor()
+        # # # setup connection to database
+        # # connection = sqlite3.connect("data.db")
+        # # cursor = connection.cursor()
+        # #
+        # # query = "SELECT * FROM items WHERE name=?"
+        # # result = cursor.execute(query, (name,))
+        # # row = result.fetchone() # there should only be 1
+        # # connection.close()
+        # # # return {'item': item}, 200 if row else 404
+        # # if row:
+        # #     return {'item': row[0], 'price': row[1]}
         #
-        # query = "SELECT * FROM items WHERE name=?"
-        # result = cursor.execute(query, (name,))
-        # row = result.fetchone() # there should only be 1
-        # connection.close()
-        # # return {'item': item}, 200 if row else 404
-        # if row:
-        #     return {'item': row[0], 'price': row[1]}
+        # # item = self.find_by_name(name)
+        # item = ItemModel.find_by_name(name)
+        # if item:
+        #     # return item
+        #     return item.json()
+        #
+        # return {"message": "Item '{}' not found.".format(name)}, 404
 
-        # item = self.find_by_name(name)
-        item = ItemModel.find_by_name(name)
-        if item:
-            # return item
-            return item.json()
-
-        return {"message": "Item '{}' not found.".format(name)}, 404
+        # return all items in the DB using ItemModel
+        return {'items': [item.json() for item in ItemModel.query.all()]}
+        # # could do a mapping of elements to a function ...
+        # # only use this if working with other languages of programmers using other languages
+        # return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))}
 
     # @classmethod
     # def find_by_name(cls, name):
