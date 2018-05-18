@@ -17,7 +17,7 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
     parser.add_argument('store_id',
         type=int,
         required=True,
-        help="This field cannot be left blank and must be an integer!"
+        help="Every item requires a store ID as an integer!"
     )
 
     @jwt_required()
@@ -27,31 +27,25 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         If not found, returns a dictionary with None and code 404
         """
 
-        # # # setup connection to database
-        # # connection = sqlite3.connect("data.db")
-        # # cursor = connection.cursor()
-        # #
-        # # query = "SELECT * FROM items WHERE name=?"
-        # # result = cursor.execute(query, (name,))
-        # # row = result.fetchone() # there should only be 1
-        # # connection.close()
-        # # # return {'item': item}, 200 if row else 404
-        # # if row:
-        # #     return {'item': row[0], 'price': row[1]}
+        # # setup connection to database
+        # connection = sqlite3.connect("data.db")
+        # cursor = connection.cursor()
         #
-        # # item = self.find_by_name(name)
-        # item = ItemModel.find_by_name(name)
-        # if item:
-        #     # return item
-        #     return item.json()
-        #
-        # return {"message": "Item '{}' not found.".format(name)}, 404
+        # query = "SELECT * FROM items WHERE name=?"
+        # result = cursor.execute(query, (name,))
+        # row = result.fetchone() # there should only be 1
+        # connection.close()
+        # # return {'item': item}, 200 if row else 404
+        # if row:
+        #     return {'item': row[0], 'price': row[1]}
 
-        # return all items in the DB using ItemModel
-        return {'items': [item.json() for item in ItemModel.query.all()]}
-        # # could do a mapping of elements to a function ...
-        # # only use this if working with other languages of programmers using other languages
-        # return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))}
+        # item = self.find_by_name(name)
+        item = ItemModel.find_by_name(name)
+        if item:
+             # return item
+            return item.json()
+
+        return {"message": "Item '{}' not found.".format(name)}, 404
 
     # @classmethod
     # def find_by_name(cls, name):
@@ -101,7 +95,8 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         data = Item.parser.parse_args()
 
         # item = {'name': name, 'price': data['price']}
-        item = ItemModel(name=name, price=data['price'], store_id=data['store_id'])
+        # item = ItemModel(name=name, price=data['price'], store_id=data['store_id'])
+        item = ItemModel(name, **data)
 
         # items.append(item)
         # Since writing to a DB now ...
@@ -229,7 +224,6 @@ class Item(Resource): # Item inherits from class Resource (flask_restful)
         # return item
         # return updated_item
         # return updated_item.json()
-        item.json()
         return item.json()
         # return {'message': "Item '{}' was added/updated with price: {}".format(name, price)}
 
@@ -254,19 +248,25 @@ class ItemList(Resource):
         Returns dictionary/JSON of items.
         """
 
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
+        # connection = sqlite3.connect('data.db')
+        # cursor = connection.cursor()
+        #
+        # query = "SELECT * FROM items"
+        # rows = cursor.execute(query)
+        # # to_rtn = {'items': list(rows)}
+        # items = []
+        # for row in rows:
+        #     # items.append({'name': row[0], 'price': row[1]})
+        #     items.append({'name': row[1], 'price': row[2]})
+        #
+        # connection.close()
+        #
+        # # return {'items': list(rows)}, 200
+        # # return to_rtn, 200
+        # return {'items': items}
 
-        query = "SELECT * FROM items"
-        rows = cursor.execute(query)
-        # to_rtn = {'items': list(rows)}
-        items = []
-        for row in rows:
-            # items.append({'name': row[0], 'price': row[1]})
-            items.append({'name': row[1], 'price': row[2]})
-
-        connection.close()
-
-        # return {'items': list(rows)}, 200
-        # return to_rtn, 200
-        return {'items': items}
+        # return all items in the DB using ItemModel
+        return {'items': [item.json() for item in ItemModel.query.all()]}
+        # # could do a mapping of elements to a function ...
+        # # only use this if working with other languages of programmers using other languages
+        # return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))}

@@ -12,6 +12,9 @@ from resources.user import UserRegister
 # from item import Item, ItemList
 from resources.item import Item, ItemList
 
+# S6L90
+from resources.store import Store, StoreList
+
 # Flask will be our apps, and app will be root of route
 app = Flask(__name__)
 
@@ -46,6 +49,10 @@ api.add_resource(Item, '/item/<string:name>')
 # replaces need for @app.route('/item/<string:name>') as part of Item class
 api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register') # calls the POST method
+
+# add new resource Store
+api.add_resource(Store, '/store/<string:name>')
+api.add_resource(StoreList, '/stores')
 
 # To ensure if this file is imported, we don't call it
 if __name__ == '__main__':  # else imported from elsewhere
