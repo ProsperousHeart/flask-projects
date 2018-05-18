@@ -1,4 +1,4 @@
-import sqlite3
+# import sqlite3    # removed when SQLAlchemy got involved
 from db import db
 
 # class ItemModel:
@@ -40,51 +40,64 @@ class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
         from the database.
         """
 
-        # setup connection to database
-        connection = sqlite3.connect("data.db")
-        cursor = connection.cursor()
+        # # setup connection to database
+        # connection = sqlite3.connect("data.db")
+        # cursor = connection.cursor()
+        #
+        # query = "SELECT * FROM items WHERE name=?"
+        # result = cursor.execute(query, (name,))
+        # row = result.fetchone() # there should only be 1
+        # connection.close()
+        # # return {'item': item}, 200 if row else 404
+        # if row:
+        #     # return {'item': row[0], 'price': row[1]}
+        #     # return cls(row[0], row[1])
+        #     return cls(*row) # row[0] == name, row[1] == price
+        # # return {"message": "Item '{}' not found.".format(name)}, 404
 
-        query = "SELECT * FROM items WHERE name=?"
-        result = cursor.execute(query, (name,))
-        row = result.fetchone() # there should only be 1
-        connection.close()
-        # return {'item': item}, 200 if row else 404
-        if row:
-            # return {'item': row[0], 'price': row[1]}
-            # return cls(row[0], row[1])
-            return cls(*row) # row[0] == name, row[1] == price
-        # return {"message": "Item '{}' not found.".format(name)}, 404
+        # SELECT * FROM items WHERE name=name LIMIT 1
+        # return ItemModel.query.filter_by(name=name).first() # returns ItemModel obj
+        return cls.query.filter_by(name=name).first() # returns ItemModel obj
 
     # @classmethod
     # def insert(cls, item):
-    def insert(self):
+    # def insert(self):
+    def save_to_db(self):   # changed from insert once SQLAlchemy got involved
         """
         Takes the connection & insertion using sqlite from post into this
         function. Takes in an item, if there updates item. Otherwise, inserts.
         """
 
-        connection = sqlite3.connect("data.db")
-        cursor = connection.cursor()
+        # connection = sqlite3.connect("data.db")
+        # cursor = connection.cursor()
+        #
+        # query = "INSERT INTO items VALUES(?, ?)"
+        # # cursor.execute(query, (item['name'], item['price']))
+        # cursor.execute(query, (self.name, self.price))
+        #
+        # connection.commit()
+        # connection.close()
 
-        query = "INSERT INTO items VALUES(?, ?)"
-        # cursor.execute(query, (item['name'], item['price']))
-        cursor.execute(query, (self.name, self.price))
+        # this is helpful for both update and insert
+        db.session.add(self) # session = coll of objs to add to DB
+        db.session.commit()
 
-        connection.commit()
-        connection.close()
+    # # @classmethod
+    # # def update(cls, item):
+    # def update(self):
+    #     """
+    #     Takes in a JSON item to insert or update to items table.
+    #     """
+    #
+    #     connection = sqlite3.connect('data.db')
+    #     cursor = connection.cursor()
+    #
+    #     query = "UPDATE items SET price=? WHERE name=?"
+    #     cursor.execute(query, (self.price, self.name))
+    #
+    #     connection.commit()
+    #     connection.close()
 
-    # @classmethod
-    # def update(cls, item):
-    def update(self):
-        """
-        Takes in a JSON item to insert or update to items table.
-        """
-
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-
-        query = "UPDATE items SET price=? WHERE name=?"
-        cursor.execute(query, (self.price, self.name))
-
-        connection.commit()
-        connection.close()
+    def del_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
