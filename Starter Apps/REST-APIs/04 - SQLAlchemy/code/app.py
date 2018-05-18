@@ -15,6 +15,9 @@ from resources.item import Item, ItemList
 # Flask will be our apps, and app will be root of route
 app = Flask(__name__)
 
+# S6L84 - specify a configuration property
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # turns of flask_SQLAlchemy tracker (not SQLAlchemy)
+
 # create key for authentication - this should NEVER be stored publicly!
 # this is only for demonstration purposes ... use a DB or something
 app.secret_key = 'jose'
@@ -38,5 +41,10 @@ api.add_resource(UserRegister, '/register') # calls the POST method
 
 # To ensure if this file is imported, we don't call it
 if __name__ == '__main__':  # else imported from elsewhere
+
+    # import the SQLAlchemy item - only needed if run this way so
+    # imported here instead of at the top - avoiding circular import
+    from db import db
+    db.init_app(app)
     app.run(port=5000, debug=True)  # Flask allows a good way to see error messages
     # debug=True allows you to receive an HTML page

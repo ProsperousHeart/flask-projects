@@ -1,12 +1,26 @@
 import sqlite3
+from db import db
 
-class ItemModel:
+# class ItemModel:
+class ItemModel(db.Model):  # tells SQLAlchemy it's something to save/add to db
+
+    # tell ALchemy which table items will be stored in
+    __tablename__ = "items"
+
+    # tell ALchemy which columns it will contain
+    # creates an index & makes it easier to search
+    id = db.Column(db.Integer, primary_key=True) # not used in prior code
+    name = db.Column(db.String(80)) # can limit size of username
+    price = db.Column(db.Float(precision=2)) # limit number of decimal pts
+
     def __init__(self, name, price):
         """
         Since internal representation, must also contain properties of an item
         as object properties.
 
         """
+        # these items must match the columns above
+        # if they're not created above, they won't be stored to the DB
 
         self.name = name
         self.price = price
